@@ -1,70 +1,137 @@
-# Discord Handler Cpp
+# Discord Handler C++
 
-A modern, feature-rich Discord bot handler built with C++ and DPP (D++), featuring both slash commands and prefix commands with a robust modular architecture.
+A modern, feature-rich Discord bot handler built with **DPP (D++)**, featuring both slash commands and prefix commands with a robust modular architecture designed for scalability and maintainability.
 
-## Features
+## 🚀 Features
 
-- Slash commands and prefix commands
-- Modular architecture (commands, events, handlers)
-- Anti-crash system with webhook error reporting
-- Cooldown system
-- Unicode emoji exports
-- CMake-based build system
+- **Dual Command System**: Support for both slash commands and prefix commands
+- **Modular Architecture**: Clean separation of concerns with dedicated handlers
+- **Anti-Crash System**: Comprehensive error handling and monitoring
+- **Event-Driven**: Fully event-driven architecture with DPP
+- **Webhook Logging**: Real-time logging for errors and guild events via libcurl
+- **MongoDB Integration**: Persistent data storage (requires mongocxx)
+- **Cooldown System**: Per-command cooldown management
+- **Environment Configuration**: Secure configuration with custom .env parser
 
-## Prerequisites
-
-- C++20 compatible compiler (GCC 8+, Clang 6+, MSVC 2019+)
-- CMake 3.16+
-- OpenSSL development libraries
-- zlib development libraries
-- libcurl development libraries (for webhooks)
-
-## Build & Run
-
-```bash
-git clone https://github.com/RealMtrx/Discord-Handler-Cpp.git
-cd Discord-Handler-Cpp
-cp .env.example .env
-# Edit .env with your bot token
-cmake -B build
-cmake --build build
-./build/Discord-Handler-Cpp
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-src/
-├── main.cpp                  # Entry point
-├── config/Config.hpp         # Configuration loader (.env)
-├── commands/slash/Ping.hpp   # Slash ping command
-├── commands/prefix/Ping.hpp  # Prefix ping command
-├── core/Emojis.hpp           # Unicode emoji exports
-├── core/CommandUtils.hpp/cpp # Cooldown utilities
-├── core/WebhookUtil.hpp      # Webhook utility
-├── database/Mongo.hpp        # MongoDB connection (stub)
-├── events/Ready.hpp          # Ready event
-├── events/GuildCreate.hpp    # Guild join event
-├── events/GuildDelete.hpp    # Guild leave event
-├── events/InteractionCreate.hpp # Slash command handler
-├── events/MessageCreate.hpp  # Prefix command handler
-├── handlers/AntiCrash.hpp/cpp # Error handling
-├── handlers/Logger.hpp       # Startup logger
-└── models/UserModel.hpp      # User data model
+Discord-Handler-Cpp/
+├── CMakeLists.txt                # CMake build configuration with FetchContent
+├── src/                          # Source code
+│   ├── main.cpp                  # Main bot entry point
+│   ├── config/Config.hpp         # Bot configuration from .env
+│   ├── Core/                     # Core utilities
+│   │   ├── CommandUtils.hpp      # Cooldown and utilities
+│   │   ├── Emojis.hpp            # Centralized emoji definitions
+│   │   └── WebhookUtil.hpp       # Webhook utility
+│   ├── Database/
+│   │   └── Mongo.hpp             # MongoDB connection (stub)
+│   ├── Events/                   # Discord event handlers
+│   │   ├── GuildCreate.hpp       # Handler when bot joins a server
+│   │   ├── GuildDelete.hpp       # Handler when bot leaves a server
+│   │   ├── InteractionCreate.hpp # Handles slash command interactions
+│   │   ├── MessageCreate.hpp     # Handles prefix commands
+│   │   └── Ready.hpp             # Bot ready event
+│   ├── Handlers/                 # Handlers for modularity
+│   │   ├── AntiCrash.hpp         # Crash prevention and error handling
+│   │   └── Logger.hpp            # Logger for bot activity
+│   ├── Models/
+│   │   └── UserModel.hpp         # User data model
+│   └── Commands/
+│       ├── Prefix/               # Prefix commands
+│       │   └── Ping.hpp          # Example prefix ping command
+│       └── Slash/                # Slash commands
+│           └── Ping.hpp          # Example slash ping command
 ```
 
-## MongoDB
+## 🔧 Installation
 
-MongoDB support requires the mongocxx driver. By default, the database module is a stub. To enable MongoDB:
+1. **Clone the repository**
 
-1. Install libmongocxx-dev (or build from source)
-2. Add to CMakeLists.txt:
-   ```cmake
-   find_package(libmongocxx REQUIRED)
-   target_link_libraries(${PROJECT_NAME} PRIVATE mongocxx::mongocxx)
+   ```bash
+   git clone https://github.com/RealMtrx/Discord-Handler-Cpp.git
+   cd Discord-Handler-Cpp
    ```
-3. Update `database/Mongo.hpp` with actual implementation
 
-## License
+2. **Build the project**
 
-MIT License - see [LICENSE](LICENSE) for details.
+   ```bash
+   cmake -B build
+   cmake --build build
+   ```
+
+3. **Environment Setup**
+
+   Copy `.env.example` to `.env` and fill in your values:
+
+   ```env
+   TOKEN=your_bot_token_here
+   PREFIX=!
+   BOT_NAME=Discord Handler
+   MONGO_URI=mongodb://localhost:27017/discord-handler
+   ERROR_WEBHOOK=https://discord.com/api/webhooks/your_webhook
+   GUILD_LOG_WEBHOOK=https://discord.com/api/webhooks/your_webhook
+   ```
+
+4. **Run the bot**
+
+   ```bash
+   ./build/Discord-Handler-Cpp
+   ```
+
+## 📋 Dependencies
+
+- **DPP**: v10.1.4 - Discord API wrapper (auto-downloaded via FetchContent)
+- **libcurl**: - HTTP client for webhooks
+- **OpenSSL**: - TLS support
+- **zlib**: - Compression support
+
+## 📝 Command Development
+
+### Creating Slash Commands
+
+Create a new file in `src/Commands/Slash/[name].hpp`:
+
+```cpp
+#pragma once
+#include <dpp/dpp.h>
+
+namespace slash {
+
+struct Ping {
+    static constexpr auto name = "ping";
+    static constexpr auto description = "Replies with Pong!";
+
+    static void execute(const dpp::slashcommand_t& event) {
+        event.reply("Pong! 🏓");
+    }
+};
+
+}
+```
+
+### Creating Prefix Commands
+
+Create a new file in `src/Commands/Prefix/[name].hpp`:
+
+```cpp
+#pragma once
+#include <dpp/dpp.h>
+
+namespace prefix {
+
+struct Ping {
+    static constexpr auto name = "ping";
+
+    static void execute(const dpp::message_create_t& event, const std::vector<std::string>& args) {
+        event.reply("Pong! 🏓");
+    }
+};
+
+}
+```
+
+---
+
+**Discord Handler** - A modern, scalable Discord bot framework built with C++.
