@@ -134,4 +134,4 @@ struct Ping {
 
 ---
 
-**Discord Handler** - A modern, scalable Discord bot framework built with C++.
+**Discord Handler** — Built by **Mtrx** — Discord: **0hu2**
